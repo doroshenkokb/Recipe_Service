@@ -1,0 +1,10 @@
+asgiref==3.6.0
+Django==3.2.19
+djangorestframework==3.14.0
+django-colorfield==0.8.0
+django-filter==23.2
+djoser==2.1.0
+pip==23.1.2
+pytz==2023.3
+python-dotenv==0.21.1
+psycopg2-binary==2.9.6
