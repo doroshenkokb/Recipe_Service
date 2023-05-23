@@ -130,3 +130,9 @@ dmypy.json
 
 # .idea
 .idea
+
+# media
+backend/media/
+
+# files fro production
+Prod/
