@@ -7,7 +7,6 @@ from rest_framework.permissions import (IsAuthenticated,
 from rest_framework.response import Response
 
 from .models import Follow, User
-#from api.paginations import LimitPagination
 from .serializers import FollowSerializer, UsersSerializer
 
 
@@ -15,6 +14,7 @@ class UsersViewSet(UserViewSet):
     """Вьюсет для работы с пользователями и подписками.
     Обработка запросов на создание/получение пользователей и
     создание/получение/удаления подписок."""
+
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -25,8 +25,10 @@ class UsersViewSet(UserViewSet):
             self.permission_classes = (IsAuthenticated,)
         return super().get_permissions()
 
-    @action(methods=['POST', 'DELETE'],
-            detail=True, )
+    @action(
+        methods=['POST', 'DELETE'],
+        detail=True,
+    )
     def subscribe(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
@@ -51,7 +53,10 @@ class UsersViewSet(UserViewSet):
             return Response({'error': 'Вы не подписаны на этого пользователя'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, permission_classes=[IsAuthenticated])
+    @action(
+        detail=False,
+        permission_classes=[IsAuthenticated]
+    )
     def subscriptions(self, request):
         user = request.user
         follows = User.objects.filter(following__user=user)

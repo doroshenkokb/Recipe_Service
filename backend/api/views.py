@@ -9,10 +9,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientsFilter, RecipesFilterSet
-from api.mixins import FavoriteCart
 from api.permissions import IsAdminAuthorOrReadOnly
 from api.utils import download_pdf
-from recipes.models import (Cart, Favorite, 
+from recipes.models import (Cart, Favorite,
                             IngredientInRecipe, Ingredients,
                             Recipes, Tags)
 from recipes.serializers import (IngredientsSerializer, RecipesSerializer,
@@ -38,8 +37,9 @@ class CustomUserViewSet(UserViewSet):
 
         return Response(
             UsersSerializer(
-                get_object_or_404(User, id=request.user.id)).data,
-                status=status.HTTP_200_OK
+                get_object_or_404(User, id=request.user.id)
+            ).data,
+            status=status.HTTP_200_OK
         )
 
     @action(
@@ -118,7 +118,7 @@ class TagsViewSet(ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class RecipesViewSet(ModelViewSet, FavoriteCart):
+class RecipesViewSet(ModelViewSet):
     """Вьюсет для модели Recipes, Favorite и Cart"""
 
     queryset = Recipes.objects.all()

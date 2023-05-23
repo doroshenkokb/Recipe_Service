@@ -4,7 +4,9 @@ djangorestframework==3.14.0
 django-colorfield==0.8.0
 django-filter==23.2
 djoser==2.1.0
+drf_extra_fields==3.4.1
 pip==23.1.2
 pytz==2023.3
 python-dotenv==0.21.1
 psycopg2-binary==2.9.6
+reportlab== 4.0.0

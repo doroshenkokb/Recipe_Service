@@ -6,11 +6,13 @@ from rest_framework.fields import SerializerMethodField
 from recipes.serializers import ShortSerializer
 
 from .models import Follow, User
+from recipes.models import Recipes
 
 
 class UsersCreateSerializer(UserCreateSerializer):
     """Сериализатор для обработки запросов на создание пользователя.
     Валидирует создание пользователя с юзернеймом 'me'."""
+
     class Meta:
         model = User
         fields = (
@@ -19,8 +21,8 @@ class UsersCreateSerializer(UserCreateSerializer):
             'username',
             'first_name',
             'last_name',
-            'password')
-
+            'password'
+        )
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_username(self, value):
@@ -33,6 +35,7 @@ class UsersCreateSerializer(UserCreateSerializer):
 
 class UsersSerializer(UserSerializer):
     """Сериализатор для отображения информации о пользователе."""
+
     is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta:
@@ -47,6 +50,7 @@ class UsersSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, object):
+        "Проверка подписки"
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
@@ -55,6 +59,7 @@ class UsersSerializer(UserSerializer):
 
 class FollowSerializer(UsersSerializer):
     """Сериализатор для добавления/удаления подписки, просмотра подписок."""
+
     id = serializers.ReadOnlyField(source='author.id')
     email = serializers.ReadOnlyField(source='author.email')
     username = serializers.ReadOnlyField(source='author.username')
@@ -66,17 +71,23 @@ class FollowSerializer(UsersSerializer):
 
     class Meta:
         model = Follow
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count')
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        )
 
     def get_is_subscribed(self, obj):
         """Получаем статус подписки на автора"""
-
         return obj.user.follower.exists()
 
     def get_recipes(self, obj):
         """Получаем рецепты, на которые подписаны и ограничиваем по лимитам"""
-
         queryset = Recipes.objects.filter(author__following__user=obj.user)
         recipes_limit = self.context.get('request').GET.get('recipes_limit')
         if recipes_limit:
@@ -85,5 +96,4 @@ class FollowSerializer(UsersSerializer):
 
     def get_recipes_count(self, obj):
         """Считаем рецепты автора, на которого подписан пользователь"""
-
         return obj.author.recipe_author.count()

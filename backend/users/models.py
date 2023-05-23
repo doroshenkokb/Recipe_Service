@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 
 class User(AbstractUser):
-    """Модель пользователей."""
+    """Модель пользователя."""
 
     email = models.EmailField(
         verbose_name='Электронная почта',

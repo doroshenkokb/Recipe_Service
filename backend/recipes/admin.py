@@ -43,10 +43,10 @@ class RecipesAdmin(admin.ModelAdmin):
     """Модель администрирования Recipes"""
 
     list_display = (
-        'id', 
-        'name', 
-        'author', 
-        'get_ingredients', 
+        'id',
+        'name',
+        'author',
+        'get_ingredients',
         'get_favorites_count',
         'get_shopping_cart_count'
     )

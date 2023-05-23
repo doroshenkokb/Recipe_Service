@@ -5,8 +5,7 @@ from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from api.mixins import check_request_return_boolean
-from recipes.models import (Cart, Favorite, IngredientInRecipe, Ingredients,
+from recipes.models import (IngredientInRecipe, Ingredients,
                             Recipes, Tags)
 
 
@@ -73,8 +72,16 @@ class RecipesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipes
         fields = (
-            'id', 'tags', 'author', 'ingredients', 'is_favorited',
-            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
+            'id',
+            'tags',
+            'author',
+            'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
         )
 
     def validate(self, data):
@@ -153,16 +160,3 @@ class RecipesSerializer(serializers.ModelSerializer):
         """Удаляем рецепт"""
 
         recipe.delete()
-
-    def get_is_favorited(self, obj):
-
-        if check_request_return_boolean(self, obj, Favorite):
-            return True
-        return False
-
-    def get_is_in_shopping_cart(self, obj):
-        """Получаем статус списка покупок"""
-
-        if check_request_return_boolean(self, obj, Cart):
-            return True
-        return False
