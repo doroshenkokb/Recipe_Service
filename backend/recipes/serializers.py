@@ -6,8 +6,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from api.mixins import check_request_return_boolean
-from recipes.models import (Cart, Favorite, 
-                            IngredientInRecipe, Ingredients,
+from recipes.models import (Cart, Favorite, IngredientInRecipe, Ingredients,
                             Recipes, Tags)
 
 

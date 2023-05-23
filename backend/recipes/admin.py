@@ -5,6 +5,8 @@ from recipes.models import Cart, Favorite, Ingredients, Recipes, Tags
 
 @admin.register(Tags)
 class TagsAdmin(admin.ModelAdmin):
+    """Модель администрирования Tags"""
+
     list_display = ('id', 'name', 'color', 'slug')
     search_fields = ('id', 'name', 'color', 'slug')
     list_filter = ('name', 'color')
@@ -13,12 +15,16 @@ class TagsAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredients)
 class IngredientsAdmin(admin.ModelAdmin):
+    """Модель администрирования IngredientsAdmin"""
+
     list_display = ('id', 'name', 'measurement_unit')
     search_fields = ('id', 'name')
     list_filter = ('measurement_unit',)
 
 
 class IngredientInRecipeInline(admin.TabularInline):
+    """Модель администрирования IngredientInRecipeInline"""
+
     model = Recipes.ingredients.through
     min_num = 1
     autocomplete_fields = ('ingredient',)
@@ -34,8 +40,14 @@ class IngredientInRecipeInline(admin.TabularInline):
 
 @admin.register(Recipes)
 class RecipesAdmin(admin.ModelAdmin):
+    """Модель администрирования Recipes"""
+
     list_display = (
-        'id', 'name', 'author', 'get_ingredients', 'get_favorites_count',
+        'id', 
+        'name', 
+        'author', 
+        'get_ingredients', 
+        'get_favorites_count',
         'get_shopping_cart_count'
     )
     search_fields = ('id', 'name', 'tags', 'ingredients')
@@ -59,6 +71,8 @@ class RecipesAdmin(admin.ModelAdmin):
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
+    """Модель администрирования Favorite"""
+
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user', 'recipe')
     list_filter = ('recipe',)
@@ -67,6 +81,8 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
+    """Модель администрирования Cart"""
+
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user', 'recipe')
     list_filter = ('recipe',)

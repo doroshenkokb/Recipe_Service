@@ -11,17 +11,18 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from api.filters import IngredientsFilter, RecipesFilterSet
 from api.mixins import FavoriteCart
 from api.permissions import IsAdminAuthorOrReadOnly
-from users.serializers import UsersSerializer, FollowSerializer
-from recipes.serializers import (RecipesSerializer, ShortSerializer, 
-                                 TagsSerializer, IngredientsSerializer)
 from api.utils import download_pdf
-from recipes.models import (Cart, Favorite, IngredientInRecipe, 
-                            Ingredients, Recipes, Tags)
-from users.models import Subscribe, User
+from recipes.models import (Cart, Favorite, 
+                            IngredientInRecipe, Ingredients,
+                            Recipes, Tags)
+from recipes.serializers import (IngredientsSerializer, RecipesSerializer,
+                                 ShortSerializer, TagsSerializer)
+from users.models import Follow, User
+from users.serializers import FollowSerializer, UsersSerializer
 
 
 class CustomUserViewSet(UserViewSet):
-    """Вьюсет для модели User и Subscribe"""
+    """Вьюсет для модели User и Follow"""
 
     queryset = User.objects.all()
     serializer_class = UsersSerializer
@@ -38,7 +39,7 @@ class CustomUserViewSet(UserViewSet):
         return Response(
             UsersSerializer(
                 get_object_or_404(User, id=request.user.id)).data,
-            status=status.HTTP_200_OK
+                status=status.HTTP_200_OK
         )
 
     @action(
@@ -51,7 +52,7 @@ class CustomUserViewSet(UserViewSet):
 
         serializer = FollowSerializer(
             self.paginate_queryset(
-                Subscribe.objects.filter(user=request.user)
+                Follow.objects.filter(user=request.user)
             ), many=True, context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
@@ -65,20 +66,21 @@ class CustomUserViewSet(UserViewSet):
 
         user = request.user
         author = get_object_or_404(User, pk=id)
-        obj = Subscribe.objects.filter(user=user, author=author)
+        obj = Follow.objects.filter(user=user, author=author)
 
         if request.method == 'POST':
             if user == author:
-                return Response({'errors': 'На себя подписаться нельзя'},
-                                status=status.HTTP_400_BAD_REQUEST
-                                )
+                return Response(
+                    {'errors': 'На себя подписаться нельзя'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             if obj.exists():
                 return Response(
                     {'errors': f'Вы уже подписаны на {author.username}'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             serializer = FollowSerializer(
-                Subscribe.objects.create(user=user, author=author),
+                Follow.objects.create(user=user, author=author),
                 context={'request': request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
