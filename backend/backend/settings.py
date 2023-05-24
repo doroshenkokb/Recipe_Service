@@ -118,6 +118,8 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend'],
 }
 
+CSV_FILES_DIR = os.path.join(BASE_DIR, 'data')
+
 AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'ru-Ru'

@@ -19,7 +19,8 @@ def download_pdf(request, ingredients):
     pdfmetrics.registerFont(
         TTFont(
             'Roboto-Regular',
-            'static/fonts/Roboto-Regular.ttf', 'UTF-8'
+            'static/fonts/Roboto-Regular.ttf', 
+            'UTF-8'
         )
     )
     page.setFont('Roboto-Regular', size=24)
@@ -29,9 +30,12 @@ def download_pdf(request, ingredients):
     page.setFont('Roboto-Regular', size=16)
     height = 700
     for ingredient_name, measurement_unit, amount in ingredients:
-        page.drawString(50, height, f'• {ingredient_name} - {amount} '
-                                    f'{measurement_unit}'
-                        )
+        page.drawString(
+            50, 
+            height, 
+            f'• {ingredient_name} - {amount} '
+            f'{measurement_unit}'
+        )
         height -= 20
 
     page.showPage()
