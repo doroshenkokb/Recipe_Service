@@ -4,9 +4,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 
 from recipes.serializers import ShortSerializer
-
 from .models import Follow, User
 from recipes.models import Recipes
+from api.utils import check_anonymous_return_bool
 
 
 class UsersCreateSerializer(UserCreateSerializer):
@@ -49,12 +49,11 @@ class UsersSerializer(UserSerializer):
             'is_subscribed'
         )
 
-    def get_is_subscribed(self, object):
-        "Проверка подписки"
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Follow.objects.filter(user=user, author=object.id).exists()
+    def get_is_subscribed(self, obj):
+        """Получаем статус подписки на автора"""
+        if check_anonymous_return_bool(self, obj, Follow):
+            return True
+        return False
 
 
 class FollowSerializer(UsersSerializer):

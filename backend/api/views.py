@@ -16,6 +16,7 @@ from recipes.models import (Cart, Favorite,
                             Recipes, Tags)
 from recipes.serializers import (IngredientsSerializer, RecipesSerializer,
                                  ShortSerializer, TagsSerializer)
+from .mixins import FavoriteCart
 from users.models import Follow, User
 from users.serializers import FollowSerializer, UsersSerializer
 
@@ -34,7 +35,6 @@ class CustomUserViewSet(UserViewSet):
     )
     def me(self, request):
         """Получить данные текущего пользователя"""
-
         return Response(
             UsersSerializer(
                 get_object_or_404(User, id=request.user.id)
@@ -49,7 +49,6 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         """Получить подписки пользователя"""
-
         serializer = FollowSerializer(
             self.paginate_queryset(
                 Follow.objects.filter(user=request.user)
@@ -63,11 +62,9 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, id):
         """Функция подписки и отписки."""
-
         user = request.user
         author = get_object_or_404(User, pk=id)
         obj = Follow.objects.filter(user=user, author=author)
-
         if request.method == 'POST':
             if user == author:
                 return Response(
@@ -118,7 +115,7 @@ class TagsViewSet(ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class RecipesViewSet(ModelViewSet):
+class RecipesViewSet(ModelViewSet, FavoriteCart):
     """Вьюсет для модели Recipes, Favorite и Cart"""
 
     queryset = Recipes.objects.all()
@@ -131,16 +128,15 @@ class RecipesViewSet(ModelViewSet):
 
     @action(
         methods=['post', 'delete'],
-        detail=True, permission_classes=[IsAuthenticated]
+        detail=True,
+        permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
         """Функция добавления и удаления избранного."""
-
         errors = {
             'if_exists': 'Рецепт уже добавлен в избранное',
             'if_deleted': 'Вы уже удалили рецепт из избранного'
         }
-
         return self.favorite_and_cart(request, pk, Favorite, errors)
 
     @action(
@@ -149,12 +145,10 @@ class RecipesViewSet(ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Функция добавления и удаления рецептов в/из списка покупок."""
-
         errors = {
             'if_exists': 'Рецепт уже добавлен в список покупок',
             'if_deleted': 'Вы уже удалили рецепт из списка покупок'
         }
-
         return self.favorite_and_cart(request, pk, Cart, errors)
 
     @action(
@@ -162,14 +156,12 @@ class RecipesViewSet(ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Скачать список покупок в pdf"""
-
         ingredients = IngredientInRecipe.objects.filter(
             recipe__cart__user=request.user).values_list(
             'ingredient__name', 'ingredient__measurement_unit'
         ).annotate(Sum('amount')).order_by()
-
         if ingredients:
-            return download_pdf(request, ingredients)
+            return download_pdf(ingredients)
         return Response(
             {'errors': 'Нет рецептов в списке покупок'},
             status=status.HTTP_400_BAD_REQUEST

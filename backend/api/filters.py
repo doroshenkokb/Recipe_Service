@@ -28,14 +28,12 @@ class RecipesFilterSet(FilterSet):
 
     def filter_is_favorited(self, queryset, is_favorited, number):
         """Фильтрация по избранному"""
-
         if number:
             return queryset.filter(favorite__user=self.request.user)
         return queryset
 
     def filter_shopping_cart(self, queryset, is_in_shopping_cart, number):
         """Фильтрация по списку покупок"""
-
         if number:
             return queryset.filter(cart__user=self.request.user)
         return queryset

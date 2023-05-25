@@ -29,7 +29,10 @@ class IngredientInRecipeInline(admin.TabularInline):
     min_num = 1
     autocomplete_fields = ('ingredient',)
     fields = (
-        'id', 'ingredient', 'amount', 'get_measurement_unit'
+        'id',
+        'ingredient',
+        'amount',
+        'get_measurement_unit'
     )
     readonly_fields = ('get_measurement_unit',)
 

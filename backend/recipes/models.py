@@ -23,7 +23,8 @@ class Ingredients(models.Model):
         verbose_name_plural = 'ингредиент'
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'measurement_unit'], name='unique ingredient'
+                fields=['name', 'measurement_unit'],
+                name='unique ingredient'
             )
         ]
 

@@ -2,6 +2,7 @@ asgiref==3.6.0
 Django==3.2.19
 djangorestframework==3.14.0
 django-colorfield==0.8.0
+django-cors-headers==4.0.0
 django-filter==23.2
 djoser==2.1.0
 drf_extra_fields==3.4.1

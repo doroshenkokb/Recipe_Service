@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from rest_framework.exceptions import ValidationError
 
 
 class User(AbstractUser):
@@ -9,15 +9,19 @@ class User(AbstractUser):
     email = models.EmailField(
         verbose_name='Электронная почта',
         unique=True,
-        max_length=254
+        max_length=settings.EMAIL
     )
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=150,
+        max_length=settings.FIRST_NAME,
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=150,
+        max_length=settings.LAST_NAME,
+    )
+    password = models.CharField(
+        'Пароль',
+        max_length=settings.PASSWORD
     )
 
     USERNAME_FIELD = 'email'
@@ -34,7 +38,7 @@ class User(AbstractUser):
         ]
 
     def __str__(self):
-        return self.username[:15]
+        return self.username
 
 
 class Follow(models.Model):
@@ -53,26 +57,22 @@ class Follow(models.Model):
         on_delete=models.CASCADE
     )
 
-    def __str__(self):
-        return f"{self.user} подписан на {self.author}"
-
-    def save(self, **kwargs):
-        if self.user == self.author:
-            raise ValidationError("Невозможно подписаться на себя")
-        super().save()
-
     class Meta:
-        verbose_name = 'Подписка'
-        verbose_name_plural = 'Подписки'
+        ordering = ('id',)
+        verbose_name = 'подписчик'
+        verbose_name_plural = 'подписчики'
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'user'],
-                name='unique_follower')
+                fields=['user', 'author'],
+                name='unique subscribe'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='Нельзя подписаться на самого себя',
+            ),
         ]
 
-    def validate_username(self, username):
-        if username in 'me':
-            raise ValidationError(
-                'Использовать имя me запрещено'
-            )
-        return username
+    def __str__(self):
+        return (
+            f'Подписчик: {self.user.username}, Автор: {self.author.username}'
+        )

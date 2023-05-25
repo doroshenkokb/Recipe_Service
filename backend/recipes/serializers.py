@@ -5,8 +5,9 @@ from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from recipes.models import (IngredientInRecipe, Ingredients,
-                            Recipes, Tags)
+from .models import (IngredientInRecipe, Ingredients,
+                     Recipes, Tags, Favorite, Cart)
+from api.utils import check_anonymous_return_bool
 
 
 class ShortSerializer(serializers.ModelSerializer):
@@ -14,7 +15,12 @@ class ShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipes
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
 
 
 class TagsSerializer(serializers.ModelSerializer):
@@ -86,7 +92,6 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Валидируем ингредиенты и теги"""
-
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
@@ -123,7 +128,6 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     def create_ingredients(self, ingredients, recipe):
         """Создание связки ингредиентов для рецепта"""
-
         for ingredient_item in ingredients:
             IngredientInRecipe.objects.bulk_create(
                 [IngredientInRecipe(
@@ -136,7 +140,6 @@ class RecipesSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         """Создаем рецепт"""
-
         image = validated_data.pop('image')
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
@@ -149,7 +152,6 @@ class RecipesSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, recipe, validated_data):
         """Обновляем рецепт"""
-
         recipe.ingredients.clear()
         self.create_ingredients(validated_data.pop('ingredients'), recipe)
         tags = validated_data.pop('tags')
@@ -158,5 +160,16 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     def delete(self, recipe):
         """Удаляем рецепт"""
-
         recipe.delete()
+
+    def get_is_favorited(self, obj):
+        """Получаем статус добавления рецепта в избанное"""
+        if check_anonymous_return_bool(self, obj, Favorite):
+            return True
+        return False
+
+    def get_is_in_shopping_cart(self, obj):
+        """Получаем статус списка покупок"""
+        if check_anonymous_return_bool(self, obj, Cart):
+            return True
+        return False
