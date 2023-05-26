@@ -1,7 +1,11 @@
 from django.contrib.admin import ModelAdmin, register
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth import get_user_model
 
-from .models import Follow, User
+from .models import Follow
+
+
+User = get_user_model()
 
 
 @register(User)

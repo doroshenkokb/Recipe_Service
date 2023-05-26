@@ -44,18 +44,12 @@ def download_pdf(ingredients_cart):
     return response
 
 
-def check_anonymous_return_bool(self, obj, model):
-    """Проверяем существует ли запрос, анонимен
-    ли пользователь и возвращаем булево значение"""
-    request = self.context.get('request')
-    if not request or request.user.is_anonymous:
-        return False
-    if model == Follow:
-        return model.objects.filter(
-            user=request.user,
-            author=obj.id
-        ).exists()
-    return model.objects.filter(
+def check_anonymous_return_bool(request, obj, model):
+    """
+    Проверяем существует ли запрос, анонимен
+    ли пользователь и возвращаем булево значение
+    """
+    return request and not (request.user.is_anonymous and model == Follow) or model.objects.filter(
         recipe=obj,
         user=request.user
-    ).exists()
+        ).exists()

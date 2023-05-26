@@ -3,10 +3,11 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 
-from recipes.serializers import ShortSerializer
-from .models import Follow, User
-from recipes.models import Recipes
 from api.utils import check_anonymous_return_bool
+from recipes.models import Recipes
+from recipes.serializers import ShortSerializer
+
+from .models import Follow, User
 
 
 class UsersCreateSerializer(UserCreateSerializer):

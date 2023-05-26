@@ -4,21 +4,21 @@ from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientsFilter, RecipesFilterSet
 from api.permissions import IsAdminAuthorOrReadOnly
 from api.utils import download_pdf
-from recipes.models import (Cart, Favorite,
-                            IngredientInRecipe, Ingredients,
+from recipes.models import (Cart, Favorite, IngredientInRecipe, Ingredients,
                             Recipes, Tags)
 from recipes.serializers import (IngredientsSerializer, RecipesSerializer,
                                  ShortSerializer, TagsSerializer)
-from .mixins import FavoriteCart
 from users.models import Follow, User
 from users.serializers import FollowSerializer, UsersSerializer
+
+from .mixins import FavoriteCart
 
 
 class CustomUserViewSet(UserViewSet):
@@ -100,7 +100,7 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 
     serializer_class = IngredientsSerializer
     queryset = Ingredients.objects.all()
-    permission_classes = [IsAdminAuthorOrReadOnly]
+    permission_classes = (AllowAny,)
     pagination_class = None
     filter_backends = [IngredientsFilter]
     search_fields = ('^name',)

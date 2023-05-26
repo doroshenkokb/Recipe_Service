@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.forms import TextInput
+from django.db import models
 
 from recipes.models import Cart, Favorite, Ingredients, Recipes, Tags
 
@@ -11,7 +13,9 @@ class TagsAdmin(admin.ModelAdmin):
     search_fields = ('id', 'name', 'color', 'slug')
     list_filter = ('name', 'color')
     prepopulated_fields = {'slug': ('name',)}
-
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'type': 'color'})},
+    }
 
 @admin.register(Ingredients)
 class IngredientsAdmin(admin.ModelAdmin):
