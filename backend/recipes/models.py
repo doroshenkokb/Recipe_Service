@@ -1,7 +1,6 @@
 from colorfield.fields import ColorField
 from django.conf import settings
 from django.db import models
-from versatileimagefield.fields import VersatileImageField
 
 from users.models import User
 
@@ -54,7 +53,6 @@ class Tags(models.Model):
         unique=True,
     )
 
-
     class Meta:
         ordering = ('id',)
         verbose_name = 'тэг'
@@ -72,8 +70,8 @@ class Recipes(models.Model):
         max_length=settings.RECIPE_NAME
     )
     text = models.TextField('Описание')
-    image = VersatileImageField(
-        'Картинка', 
+    image = models.ImageField(
+        'Картинка',
         upload_to='recipes/%Y/%m/%d/'
     )
     cooking_time = models.PositiveSmallIntegerField(
@@ -90,7 +88,6 @@ class Recipes(models.Model):
         related_name='recipe_author',
         verbose_name='Автор'
     )
-
 
     class Meta:
         ordering = ('-id',)
@@ -160,6 +157,7 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'Пользователь:{self.user.username}, рецепт: {self.recipe.name}'
+
 
 class Cart(models.Model):
     """Модель списка покупок"""

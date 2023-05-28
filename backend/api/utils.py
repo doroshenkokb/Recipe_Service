@@ -49,7 +49,8 @@ def check_anonymous_return_bool(request, obj, model):
     Проверяем существует ли запрос, анонимен
     ли пользователь и возвращаем булево значение
     """
-    return request and not (request.user.is_anonymous and model == Follow) or model.objects.filter(
-        recipe=obj,
-        user=request.user
-        ).exists()
+    return (
+        request
+        and not (request.user.is_anonymous and model == Follow)
+        or model.objects.filter(recipe=obj, user=request.user).exists()
+    )

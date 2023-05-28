@@ -3,12 +3,11 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
-from versatileimagefield.serializers import VersatileImageFieldSerializer
 
+from api.mixins import Base64ImageField
 from api.utils import check_anonymous_return_bool
-
-from .models import (Cart, Favorite, IngredientInRecipe, Ingredients, Recipes,
-                     Tags)
+from recipes.models import (Cart, Favorite, IngredientInRecipe, Ingredients,
+                            Recipes, Tags)
 
 
 class ShortSerializer(serializers.ModelSerializer):
@@ -69,7 +68,8 @@ class RecipesSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         required=True, max_length=settings.RECIPE_NAME
     )
-    image = VersatileImageFieldSerializer(
+    image = Base64ImageField(
+        max_length=None,
         required=True,
         allow_null=False,
         allow_empty_file=False

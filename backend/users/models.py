@@ -38,7 +38,11 @@ class User(AbstractUser):
         ]
 
     def __str__(self):
-        return self.username
+        return (
+            f'Пользователь: {self.username}, '
+            f'Имя: {self.first_name}, '
+            f'Фамилия: {self.last_name}'
+        )
 
 
 class Follow(models.Model):
@@ -58,7 +62,6 @@ class Follow(models.Model):
     )
 
     class Meta:
-        ordering = ('id',)
         verbose_name = 'подписчик'
         verbose_name_plural = 'подписчики'
         constraints = [

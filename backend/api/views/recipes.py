@@ -1,98 +1,19 @@
-from django.db.models import Sum
-from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
+from django.db.models import Count, Sum
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientsFilter, RecipesFilterSet
+from api.mixins import FavoriteCart
 from api.permissions import IsAdminAuthorOrReadOnly
+from api.serializers.recipes import (IngredientsSerializer, RecipesSerializer,
+                                     ShortSerializer, TagsSerializer)
 from api.utils import download_pdf
 from recipes.models import (Cart, Favorite, IngredientInRecipe, Ingredients,
                             Recipes, Tags)
-from recipes.serializers import (IngredientsSerializer, RecipesSerializer,
-                                 ShortSerializer, TagsSerializer)
-from users.models import Follow, User
-from users.serializers import FollowSerializer, UsersSerializer
-
-from .mixins import FavoriteCart
-
-
-class CustomUserViewSet(UserViewSet):
-    """Вьюсет для модели User и Follow"""
-
-    queryset = User.objects.all()
-    serializer_class = UsersSerializer
-    permission_classes = [IsAdminAuthorOrReadOnly]
-    pagination_class = PageNumberPagination
-
-    @action(
-        methods=['get'], detail=False,
-        permission_classes=[IsAuthenticated]
-    )
-    def me(self, request):
-        """Получить данные текущего пользователя"""
-        return Response(
-            UsersSerializer(
-                get_object_or_404(User, id=request.user.id)
-            ).data,
-            status=status.HTTP_200_OK
-        )
-
-    @action(
-        methods=['get'], detail=False,
-        permission_classes=[IsAuthenticated],
-        pagination_class=PageNumberPagination
-    )
-    def subscriptions(self, request):
-        """Получить подписки пользователя"""
-        serializer = FollowSerializer(
-            self.paginate_queryset(
-                Follow.objects.filter(user=request.user)
-            ), many=True, context={'request': request}
-        )
-        return self.get_paginated_response(serializer.data)
-
-    @action(
-        methods=['post', 'delete'],
-        detail=True, permission_classes=[IsAuthenticated]
-    )
-    def subscribe(self, request, id):
-        """Функция подписки и отписки."""
-        user = request.user
-        author = get_object_or_404(User, pk=id)
-        obj = Follow.objects.filter(user=user, author=author)
-        if request.method == 'POST':
-            if user == author:
-                return Response(
-                    {'errors': 'На себя подписаться нельзя'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if obj.exists():
-                return Response(
-                    {'errors': f'Вы уже подписаны на {author.username}'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            serializer = FollowSerializer(
-                Follow.objects.create(user=user, author=author),
-                context={'request': request}
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if user == author:
-            return Response(
-                {'errors': 'Вы не можете отписаться от самого себя'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
-            {'errors': f'Вы уже отписались от {author.username}'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
@@ -125,6 +46,14 @@ class RecipesViewSet(ModelViewSet, FavoriteCart):
     filter_class = RecipesFilterSet
     add_serializer = ShortSerializer
     add_model = Recipes
+
+    def get_queryset(self):
+        """Получаем queryset рецептов с аннотацией recipes_count"""
+        return self.annotate_recipes_count(super().get_queryset())
+
+    def annotate_recipes_count(self, queryset):
+        """Аннотируем queryset рецептов с количеством рецептов автора"""
+        return queryset.annotate(recipes_count=Count('author__recipe_author'))
 
     @action(
         methods=['post', 'delete'],

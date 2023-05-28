@@ -1,5 +1,9 @@
+import base64
+
+# from rest_framework.generics import ListAPIView
+from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.response import Response
 
 
@@ -28,3 +32,25 @@ class FavoriteCart:
             {'errors': errors.get('if_deleted')},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+# class SubscriptionListView(ListAPIView):
+    # """
+    # Представление, которое возвращает список
+    # подписок для аутентифицированного пользователя.
+    # """
+    # serializer_class = FollowSerializer
+
+    # def get_queryset(self):
+        # user = self.request.user
+        # return user.followed_by.all()
+
+
+class Base64ImageField(serializers.ImageField):
+    """Кастомное поле для обработки изображений в формате base64"""
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'image.{ext}')
+        return super().to_internal_value(data)
