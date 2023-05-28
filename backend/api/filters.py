@@ -18,7 +18,9 @@ class IngredientsFilter(SearchFilter):
 
 
 class RecipesFilterSet(FilterSet):
-    """Фильтр рецептов по тегам, авторам, избранному, подпискам"""
+    """
+    Фильтр рецептов по тегам, авторам, избранному, подпискам
+    """
 
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
