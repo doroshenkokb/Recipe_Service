@@ -170,12 +170,12 @@ class RecipesSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         """Получаем статус добавления рецепта в избанное"""
-        if check_anonymous_return_bool(self, obj, Favorite):
+        if check_anonymous_return_bool(self.context.get('request'), obj, Favorite):
             return True
         return False
 
     def get_is_in_shopping_cart(self, obj):
         """Получаем статус списка покупок"""
-        if check_anonymous_return_bool(self, obj, Cart):
+        if check_anonymous_return_bool(self.context.get('request'), obj, Cart):
             return True
         return False
