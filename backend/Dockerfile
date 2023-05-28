@@ -4,7 +4,10 @@ WORKDIR /backend
 
 COPY ./requirements.txt .
 
-RUN pip3 install -r requirements.txt --no-cache-dir
+RUN apt-get update && apt-get install -y libcairo2-dev libgirepository1.0-dev \
+    && pip3 install --upgrade pip \
+    && pip3 install pycairo \
+    && pip3 install -r requirements.txt --no-cache-dir
 
 COPY . .
 
