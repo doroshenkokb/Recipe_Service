@@ -3,12 +3,13 @@ Django==3.2.19
 djangorestframework==3.14.0
 django-colorfield==0.8.0
 django-cors-headers==4.0.0
+django-debug-toolbar==3.2.4
 django-filter==23.2
 djoser==2.1.0
 drf_extra_fields==3.4.1
+gunicorn
 pip==23.1.2
 pytz==2023.3
-pycairo==1.23.0
 python-dotenv==0.21.1
 psycopg2-binary==2.9.6
 reportlab== 4.0.0

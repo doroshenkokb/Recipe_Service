@@ -50,7 +50,7 @@ class UsersSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         """Получаем статус подписки на автора"""
-        return check_anonymous_return_bool(self, obj, Follow)
+        return check_anonymous_return_bool(self, obj, Follow, 'author')
 
 
 class FollowSerializer(UsersSerializer):

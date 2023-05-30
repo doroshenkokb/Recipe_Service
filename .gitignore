@@ -138,3 +138,8 @@ backend/static/
 
 # files fro production
 Prod/
+
+# migrations
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py

@@ -16,6 +16,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'password1', 'password2')
+        verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
 

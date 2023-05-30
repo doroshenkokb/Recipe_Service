@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.8'
 services:
 
   db:
@@ -9,31 +9,31 @@ services:
       - ./.env
 
   backend:
-    image: monolith200/foodgram_backend:latest
+    image: doroshenkokb/foodgram_backend:latest
     restart: always
     volumes:
-      - static:/app/static/
-      - media:/app/media/
+      - static:/backend/static/
+      - media:/backend/media/
     depends_on:
       - db
     env_file:
       - ./.env
 
   frontend:
-    image: monolith200/foodgram_frontend:latest
+    image: doroshenkokb/foodgram_front:v1.1
     volumes:
       - ../frontend/:/app/result_build/
 
   nginx:
-    image: nginx:1.19.3
+    image: nginx:1.21.3-alpine
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
-      - static:/var/html/static
-      - media:/var/html/media
+      - static:/var/html/static/
+      - media:/var/html/media/
     restart: always
     depends_on:
       - backend

@@ -84,7 +84,8 @@ class Recipes(models.Model):
         verbose_name='Ингредиенты'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User,
+        on_delete=models.CASCADE,
         related_name='recipe_author',
         verbose_name='Автор'
     )
@@ -185,4 +186,4 @@ class Cart(models.Model):
         verbose_name_plural = 'Список покупок'
 
     def __str__(self):
-        return f'Пользователь:{self.user.username}, рецепт: {self.recipe.name}'
+        return f'{self.recipe} в списке покупок у {self.user}'
