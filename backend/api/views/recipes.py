@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
@@ -48,8 +49,11 @@ class RecipesViewSet(ModelViewSet, FavoriteCart):
     permission_classes = (
         IsAuthenticatedOrReadOnly, AuthorOrReadOnly
     )
+    pagination_class = PageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipesFilterSet
+    add_serializer = ShortSerializer
+    add_model = Recipes
 
     @action(
         detail=True,

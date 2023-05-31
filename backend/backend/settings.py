@@ -133,11 +133,14 @@ DJOSER = {
     'SERIALIZERS': {
         'user_create': 'api.serializers.users.UserCreateSerializer',
         'user': 'api.serializers.users.UserSerializer',
+        'user_list': 'api.serializers.users.UserSerializer',
         'current_user': 'api.serializers.users.UserSerializer',
     },
     'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_list': ['rest_framework.permissions.AllowAny'],
+        'user_create': ['rest_framework.permissions.AllowAny'],
+        'user': ['rest_framework.permissions.IsAuthenticated'],
+        'current_user': ['rest_framework.serializers.CurrentUser'],
     },
 }
 

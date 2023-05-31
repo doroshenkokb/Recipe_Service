@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
@@ -73,14 +74,11 @@ class UsersViewSet(UserViewSet):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(
-        detail=False,
-        permission_classes=[IsAuthenticated]
-    )
-    def subscriptions(self, request):
-        serializer = FollowSerializer(
-            self.paginate_queryset(
-                Follow.objects.filter(user=request.user)
-            ), many=True, context={'request': request}
-        )
-        return self.get_paginated_response(serializer.data)
+
+class SubscribeListView(ListAPIView):
+    """Список покупок"""
+    serializer_class = FollowSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return Follow.objects.filter(user=self.request.user)
