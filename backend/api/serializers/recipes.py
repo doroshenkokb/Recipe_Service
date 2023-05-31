@@ -94,8 +94,8 @@ class RecipeGETSerializer(serializers.ModelSerializer):
         ingredients = IngredientInRecipe.objects.filter(recipe=object)
         return IngredientInRecipeSerializer(ingredients, many=True).data
 
-    def get_is_favorited(self, obj): 
-        """Получаем статус добавления рецепта в избанное""" 
+    def get_is_favorited(self, obj):
+        """Получаем статус добавления рецепта в избанное"""
         if check_anonymous_return_bool(self, obj, Favorite, 'recipe'):
             return True
         return False

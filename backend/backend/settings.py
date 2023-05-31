@@ -130,21 +130,21 @@ REST_FRAMEWORK = {
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.users.UserCreateSerializer',
+        'user': 'api.serializers.users.UserSerializer',
+        'current_user': 'api.serializers.users.UserSerializer',
+    },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_list': ['rest_framework.permissions.AllowAny'],
-    },
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.users.UsersCreateSerializer',
-        'user': 'api.serializers.users.UsersSerializer',
-        'current_user': 'api.serializers.users.UserSerializer',
     },
 }
 
 CORS_URLS_REGEX = r'^/api/.*$'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    'http://localhost:8000',
 ]
 
 CSV_FILES_DIR = os.path.join(BASE_DIR, 'data')
