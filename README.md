@@ -1,4 +1,6 @@
-# Cервис Foodgram
+# Foodgram
+
+![ci/cd_foodgram workflow](https://github.com/doroshenkokb/foodgram-project-react/actions/workflows/my_project_workflows.yml/badge.svg)
 
 ## Описание
 
