@@ -23,3 +23,4 @@ class Command(BaseCommand):
                 for row in reader
             ]
             Ingredients.objects.bulk_create(ingredients)
+        self.stdout.write(self.style.SUCCESS('=== Теги успешно загружены ==='))
