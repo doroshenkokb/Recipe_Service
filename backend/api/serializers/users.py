@@ -82,7 +82,7 @@ class FollowSerializer(UsersSerializer):
 
     def get_recipes(self, obj):
         """Получаем рецепты, на которые подписаны и ограничиваем по лимитам"""
-        queryset = Recipes.objects.filter(author__following__user=obj.user)
+        queryset = Recipes.objects.filter(author=obj.author)
         recipes_limit = self.context.get('request').GET.get('recipes_limit')
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
