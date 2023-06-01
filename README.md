@@ -1,6 +1,7 @@
 # Foodgram
 
 бэйдж красный, потомучто в мастер пока ни чего не пушил работаю в девелоп..
+заходи проверяй http://158.160.17.206/recipes
 ![ci/cd_foodgram workflow](https://github.com/doroshenkokb/foodgram-project-react/actions/workflows/my_project_workflows.yml/badge.svg)
 
 ## Описание
