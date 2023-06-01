@@ -1,37 +1,208 @@
-### отчитываюсь:
+# Cервис Foodgram
 
-В основном с замечаниями справился н оесть нюансы):
+## Описание
 
--если делаю FollowSerializer на User, то всё рушится, в режиме отладки получаю такие ошибки как:
+Cервис Foodgram и API для него. Реализован CI/CD проекта. Пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список "Избранное", скачивать список продуктов в формате '.pdf'
 
-  Got AttributeError when attempting to get a value for field `username` on serializer `FollowSerializer`.
-The serializer field might be named incorrectly and not match any attribute or key on the `Follow` instance.
-Original exception text was: 'Follow' object has no attribute 'username',
+### Доступный функционал
 
-Got AttributeError when attempting to get a value for field `email` on serializer `FollowSerializer`.
-The serializer field might be named incorrectly and not match any attribute or key on the `Follow` instance.
-Original exception text was: 'Follow' object has no attribute 'email' и подобные, 
+- Аутентификация реализована с помощью стандартного модуля DRF - Authtoken.
+- У неаутентифицированных пользователей доступ к API только на уровне чтения.
+- Создание объектов разрешено только аутентифицированным пользователям.На прочий фунционал наложено ограничение в виде административных ролей и авторства.
+- Управление пользователями.
+- Возможность получения подробной информации о себе и ее редактирование.
+- Возможность подписаться на других пользователей и отписаться от них.
+- Получение списка всех тегов и ингредиентов.
+- Получение списка всех рецептов, их добавление. Получение, обновление и удаление конкретного рецепта.
+- Возможность добавить рецепт в избранное.
+- Возможность добавить рецепт в список покупок.
+- Возможность скачать список покупок в PDF формате.
+- Фильтрация по полям.
 
-все свеловь к тому что добавлял новые методы типа этого
+#### Документация к API доступна по адресу <http://localhost/api/docs/> после локального запуска проекта
 
-def get_email(self, obj):
-    """Получаем email пользователя"""
-    return obj.user.email 
+#### Реализовано при помощи
 
-и сериалайзер становился еще больше чем был, поэтому оставил пока как было 
+- Python 3.7
+- Django 3.2.15
+- Django Rest Framework 3.12.4
+- Docker
+- Docker-compose
+- PostgreSQL
+- Gunicorn
+- Nginx
+- GitHub Actions
+- Выделенный сервер Linux Ubuntu 22.04 с публичным IP
+
+#### Локальный запуск проекта
+
+- Склонировать репозиторий:
+
+```bash
+   git clone <название репозитория>
+```
+
+```bash
+   cd <название репозитория> 
+```
+
+Cоздать и активировать виртуальное окружение:
+
+Команда для установки виртуального окружения на Mac или Linux:
+
+```bash
+   python3 -m venv env
+   source env/bin/activate
+```
+
+Команда для Windows:
+
+```bash
+   python -m venv venv
+   source venv/Scripts/activate
+```
+
+- Перейти в директорию infra:
+
+```bash
+   cd infra
+```
+
+- Создать файл .env по образцу:
+
+```bash
+   cp .env.example .env
+```
+
+- Выполнить команду для доступа к документации:
+
+```bash
+   docker-compose up 
+```
+
+Установить зависимости из файла requirements.txt:
+
+```bash
+   cd ..
+   cd backend
+   pip install -r requirements.txt
+```
+
+```bash
+   python manage.py migrate
+```
+
+Заполнить базу тестовыми данными об ингредиентах и тегов :
+
+```bash
+   python manage.py load_ingredients
+   python manage.py load_tags
+```
+
+Создать суперпользователя, если необходимо:
+
+```bash
+python manage.py createsuperuser
+```
+
+- Запустить локальный сервер:
+
+```bash
+   python manage.py runserver
+```
+
+#### Установка на удалённом сервере
+
+- Выполнить вход на удаленный сервер
+- Установить docker:
+
+```bash
+   sudo apt install docker.io
+   ```
+
+- Установить docker-compose:
+
+``` bash
+    sudo apt install docker-compose     
+```
+
+или воспользоваться официальной [инструкцией](https://docs.docker.com/compose/install/)
+
+- Находясь локально в директории infra/, скопировать файлы docker-compose.yml и nginx.conf на удаленный сервер:
+
+```bash
+scp docker-compose.yml <username>@<host>:/home/<username>/
+scp nginx.conf <username>@<host>:/home/<username>/
+```
+
+- Для правильной работы workflow необходимо добавить в Secrets данного репозитория на GitHub переменные окружения:
+
+```bash
+
+DOCKER_USERNAME=<имя пользователя DockerHub>
+DOCKER_PASSWORD=<пароль от DockerHub>
+
+USER=<username для подключения к удаленному серверу>
+HOST=<ip сервера>
+PASSPHRASE=<пароль для сервера, если он установлен>
+SSH_KEY=<ваш приватный SSH-ключ (для получения команда: cat ~/.ssh/id_rsa)>
+
+TELEGRAM_TO=<id вашего Телеграм-аккаунта>
+TELEGRAM_TOKEN=<токен вашего бота>
+```
+
+#### Workflow проекта
+
+- **запускается при выполнении команды git push**
+- **tests:** проверка кода на соответствие PEP8.
+- **build_and_push_to_docker_hub:** сборка и размещение образа проекта на DockerHub.
+- **deploy:** автоматический деплой на боевой сервер и запуск проекта.
+- **send_massage:** отправка уведомления пользователю в Телеграм.
+
+#### После успешного результата работы workflow зайдите на боевой сервер
+
+- Примените миграции:
+
+```bash
+   sudo docker-compose exec backend python manage.py migrate
+```
+
+- Подгружаем статику:
+
+```bash
+   sudo docker-compose exec backend python manage.py collectstatic --no-input
+```
+
+- Заполните базу тестовыми данными об ингредиентах и тегах:
+
+```bash
+   sudo docker-compose exec backend python manage.py load_ingredients
+   udo docker-compose exec backend python manage.py load_tags
+```
+
+- Создайте суперпользователя:
+
+```bash
+   sudo docker-compose exec backend python manage.py createsuperuser
+```
+
+Проект доступен по адресу: <http://158.160.17.206/recipes>
+
+Доступ в админку:
+
+```bash
+   email - admin@mail.ru
+   пароль - 12345
+```
+
+Пользователь:
+
+```bash
+   email - user1@mail.ru
+   пароль - P@ssword12345
+```
 
 
-- немного не уловил по поводу class CustomUserAmin(UserAdmin),
-пробовал по разному с add_form но разницы не заметил..
+#### Автор
 
-- в settings ис параметром дефолт поиграться, тож не уловил, в итоге потом оставлю только постгресс..
-
-- по поводу этого def subscriptions(self, request): и сократить до одной строчки, то пробовал, и вроде потом все работало,
-но потом чето пошло не так, и толи я дурак толи хз, но в один момент при ипорте фоллоус_сериалайзер в миксины, не проходил иморт...хотя в других модулях такиех проблем не было, такиже глюки были и при разбитие на много мелких приложений, все пути 10 раз перепроверял...по этому оставил пока рецепты и юзеров..
-
-- по поводу как подружил бек и фронт, то делал все как в каком то из спринтов, то удалил пакадж_лок.жсон, потом npm i,
-,подправил сеттингс, подпраил пакадж.жсон, ну и в одном терминале запустил бек, в другом фронт...сейчас когда все проверял также делал, не в контейнерах, это уже будет следующий этап...
-
-вообщем как то так, пиши замечания!
-
-если что я в пачке+)
+ [https://github.com/doroshenkokb](http://github.com/doroshenkokb)

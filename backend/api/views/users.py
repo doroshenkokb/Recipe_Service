@@ -3,6 +3,7 @@ from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
@@ -19,6 +20,7 @@ class UsersViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = PageNumberPagination
 
     def get_permissions(self):
         if self.action == 'me':
