@@ -1,5 +1,6 @@
 # Foodgram
 
+бэйдж пока красный потомучто в мастер пока ни чего не пушил..
 ![ci/cd_foodgram workflow](https://github.com/doroshenkokb/foodgram-project-react/actions/workflows/my_project_workflows.yml/badge.svg)
 
 ## Описание
