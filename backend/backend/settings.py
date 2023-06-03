@@ -52,7 +52,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'redoc')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,6 +68,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 STATIC_URL = '/static/'
+
+# STATICFILES_DIRS = os.path.join(BASE_DIR, 'redoc')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -131,10 +133,10 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'api.serializers.users.UserCreateSerializer',
-        'user': 'api.serializers.users.UserSerializer',
-        'user_list': 'api.serializers.users.UserSerializer',
-        'current_user': 'api.serializers.users.UserSerializer',
+        'user_create': 'api.users.serializers.UsersCreateSerializer',
+        'user': 'api.users.serializers.UsersSerializer',
+        'user_list': 'api.users.serializers.UsersSerializer',
+        'current_user': 'api.users.serializers.UsersSerializer',
     },
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],

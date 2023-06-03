@@ -8,7 +8,7 @@ from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
-from api.serializers.users import FollowSerializer, UsersSerializer
+from api.users.serializers import FollowSerializer, UsersSerializer
 from users.models import Follow, User
 
 
@@ -30,6 +30,7 @@ class UsersViewSet(UserViewSet):
     @action(
         methods=['POST'],
         detail=True,
+        permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, pk=None, **kwargs):
         user_id = self.kwargs.get('user_id')
@@ -57,8 +58,9 @@ class UsersViewSet(UserViewSet):
         )
 
     @action(
-        methods=['DELETE'],
+        methods=['delete'],
         detail=True,
+        permission_classes=[IsAuthenticated]
     )
     def unsubscribe(self, request, *args, **kwargs):
         """Отписаться от пользователя"""

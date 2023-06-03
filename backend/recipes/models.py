@@ -1,5 +1,6 @@
 from colorfield.fields import ColorField
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from users.models import User
@@ -95,6 +96,14 @@ class Recipes(models.Model):
         verbose_name = 'рецепт'
         verbose_name_plural = 'рецепты'
 
+    def clean(self):
+        if self.cooking_time <= 0:
+            raise ValidationError("Время готовки должно быть больше минуты.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -126,6 +135,16 @@ class IngredientInRecipe(models.Model):
                 name='unique ingredient in recipe'
             )
         ]
+
+    def clean(self):
+        if self.amount == 0:
+            raise ValidationError(
+                "Количество ингредиента не может быть равным 0."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.ingredient}'

@@ -3,16 +3,16 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import IngredientsFilter, RecipesFilterSet
 from api.mixins import FavoriteCart
 from api.permissions import AuthorOrReadOnly
-from api.serializers.recipes import (FavoriteSerializer, IngredientsSerializer,
+from api.recipes.serializers import (FavoriteSerializer, IngredientsSerializer,
                                      RecipeGETSerializer, RecipeSerializer,
                                      ShoppingCartSerializer, ShortSerializer,
                                      TagsSerializer)
@@ -117,16 +117,16 @@ class RecipesViewSet(ModelViewSet, FavoriteCart):
     )
     def download_shopping_cart(self, request):
         """Позволяет текущему пользователю загрузить список покупок."""
-        ingredients_cart = (
-            IngredientInRecipe.objects.filter(
-                recipe__author=request.user
-            ).values(
-                'ingredient__name',
-                'ingredient__measurement_unit',
-            ).order_by(
-                'ingredient__name'
-            ).annotate(ingredient_value=Sum('amount'))
-        ).values_list(
+        shopping_cart = Cart.objects.filter(user=request.user)
+        ingredients_cart = IngredientInRecipe.objects.filter(
+            recipe__in=shopping_cart.values('recipe')
+        )
+        ingredients_cart = ingredients_cart.values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(ingredient_value=Sum('amount'))
+        ingredients_cart = ingredients_cart.order_by('ingredient__name')
+        ingredients_cart = ingredients_cart.values_list(
             'ingredient__name',
             'ingredient__measurement_unit',
             'ingredient_value'

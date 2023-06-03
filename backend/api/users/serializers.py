@@ -3,7 +3,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 
-from api.serializers.recipes import ShortSerializer
 from api.utils import check_anonymous_return_bool
 from recipes.models import Recipes
 from users.models import Follow, User
@@ -21,7 +20,7 @@ class UsersCreateSerializer(UserCreateSerializer):
             'username',
             'first_name',
             'last_name',
-            'password'
+            'password',
         )
 
     def validate_username(self, value):
@@ -45,7 +44,7 @@ class UsersSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
-            'is_subscribed'
+            'is_subscribed',
         )
 
     def get_is_subscribed(self, obj):
@@ -76,10 +75,6 @@ class FollowSerializer(UsersSerializer):
             'recipes',
         )
 
-    def get_is_subscribed(self, obj):
-        """Получаем статус подписки на автора"""
-        return obj.user.follower.exists()
-
     def get_recipes(self, obj):
         """Получаем рецепты, на которые подписаны и ограничиваем по лимитам"""
         queryset = Recipes.objects.filter(author=obj.author)
@@ -87,3 +82,16 @@ class FollowSerializer(UsersSerializer):
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
         return ShortSerializer(queryset, many=True).data
+
+
+class ShortSerializer(serializers.ModelSerializer):
+    """Сериализатор короткого ответа рецептов для подписок и избранного"""
+
+    class Meta:
+        model = Recipes
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )

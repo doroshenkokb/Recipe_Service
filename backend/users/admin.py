@@ -1,7 +1,10 @@
-from django.contrib.admin import ModelAdmin, register
+from django import forms
+from django.contrib import admin
+from django.contrib.admin import register
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 
 from .models import Follow
 
@@ -40,12 +43,34 @@ class CustomUserAdmin(UserAdmin):
     verbose_name_plural = 'Пользователи'
 
 
-@register(Follow)
-class FollowAdmin(ModelAdmin):
+class FollowAdminForm(forms.ModelForm):
     """
-    Административная панель Follow
+    Кастомная форма для административной панели Follow.
+    Проверяет, что подписчик и автор не совпадают.
     """
 
+    class Meta:
+        model = Follow
+        fields = '__all__'
+
+    def clean(self):
+        """
+        Проверяет, что подписчик и автор не совпадают.
+        Если они совпадают, возбуждает исключение ValidationError.
+        """
+        cleaned_data = super().clean()
+        user = cleaned_data.get('user')
+        author = cleaned_data.get('author')
+        if user == author:
+            raise ValidationError("Нельзя подписаться на самого себя")
+
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
+    """
+    Административная панель для модели Follow.
+    """
+    form = FollowAdminForm
     list_display = ('id', 'user', 'author')
     search_fields = ('user', 'author')
     autocomplete_fields = ('user', 'author')

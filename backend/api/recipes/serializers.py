@@ -1,9 +1,9 @@
 from django.db import transaction
-from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from api.mixins import Base64ImageField
+from api.users.serializers import UsersSerializer
 from api.utils import check_anonymous_return_bool
 from recipes.models import (Cart, Favorite, IngredientInRecipe, Ingredients,
                             Recipes, Tags)
@@ -68,7 +68,7 @@ class RecipeGETSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при GET запросах."""
 
     tags = TagsSerializer(many=True, read_only=True)
-    author = UserSerializer(read_only=True)
+    author = UsersSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
@@ -107,7 +107,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при небезопасных запросах."""
     ingredients = IngredientAmountSerializer(many=True)
     image = Base64ImageField(use_url=True, max_length=None)
-    author = UserSerializer(read_only=True)
+    author = UsersSerializer(read_only=True)
 
     class Meta:
         model = Recipes
@@ -119,16 +119,15 @@ class RecipeSerializer(serializers.ModelSerializer):
             'name',
             'text',
             'cooking_time',
-            'author'
+            'author',
         )
 
     def validate_ingredients(self, ingredients):
         """Проверяем, что рецепт содержит уникальные ингредиенты
         и их количество не меньше 1."""
-        ingredients_data = [
-            ingredient.get('id') for ingredient in ingredients
-        ]
-        if len(ingredients_data) != len(set(ingredients_data)):
+        ingredient_ids = [ingredient.get('id') for ingredient in ingredients]
+        unique_ids = set(ingredient_ids)
+        if len(ingredient_ids) != len(unique_ids):
             raise serializers.ValidationError(
                 'Ингредиенты рецепта должны быть уникальными'
             )
@@ -150,6 +149,14 @@ class RecipeSerializer(serializers.ModelSerializer):
                 'Теги рецепта должны быть уникальными'
             )
         return tags
+
+    def validate_cooking_time(self, cooking_time):
+        """Валидатор времени приготовления."""
+        if cooking_time < 1:
+            raise serializers.ValidationError(
+                'Время приготовления не может быть меньше 1 мин.'
+            )
+        return cooking_time
 
     @staticmethod
     def add_ingredients(ingredients_data, recipe):
