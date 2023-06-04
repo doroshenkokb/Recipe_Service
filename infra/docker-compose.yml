@@ -9,7 +9,7 @@ services:
       - ./.env
 
   backend:
-    image: doroshenkokb/foodgram_backend:v1.01
+    image: doroshenkokb/foodgram_backend:v2.0
     restart: always
     volumes:
       - static:/backend/static/
