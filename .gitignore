@@ -130,3 +130,18 @@ dmypy.json
 
 # .idea
 .idea
+
+# media
+backend/media/
+backend/static/
+/static/
+**/static/
+
+# files fro production
+Prod/
+
+# migrations
+users/migrations/
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
