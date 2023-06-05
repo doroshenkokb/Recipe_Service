@@ -62,6 +62,7 @@ class FollowSerializer(UsersSerializer):
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Follow
@@ -73,6 +74,7 @@ class FollowSerializer(UsersSerializer):
             'last_name',
             'is_subscribed',
             'recipes',
+            'recipes_count'
         )
 
     def get_recipes(self, obj):
@@ -82,6 +84,10 @@ class FollowSerializer(UsersSerializer):
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
         return ShortSerializer(queryset, many=True).data
+
+    def get_recipes_count(self, obj):
+        """Считаем рецепты автора, на которого подписан пользователь"""
+        return obj.author.recipe_author.count()
 
 
 class ShortSerializer(serializers.ModelSerializer):
