@@ -23,8 +23,4 @@ class Command(BaseCommand):
                 for row in reader
             ]
             Ingredients.objects.bulk_create(ingredients)
-        self.stdout.write(
-            self.style.SUCCESS(
-            '=== Ингредиенты успешно загружены ==='
-            )
-        )
+        self.stdout.write(self.style.SUCCESS('=== Ингредиенты загружены ==='))
