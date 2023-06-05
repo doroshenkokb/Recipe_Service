@@ -19,14 +19,20 @@ def download_pdf(*ingredients_pages):
     page.drawString(130, 750, 'Список ингредиентов для рецептов')
     page.setFont('Arial', size=16)
     initial_height = 700
+    max_ingredients_per_page = 30
+    ingredients_count = 0
+
     for ingredients_cart in ingredients_pages:
-        height = initial_height
         for index, ingredient_data in enumerate(ingredients_cart, start=1):
             ing_name, unit, amount = ingredient_data
             ingredient_string = f'{index}. {ing_name} - {amount} {unit}'
+            height = initial_height - (ingredients_count % max_ingredients_per_page) * 20
             page.drawString(50, height, ingredient_string)
-            height -= 20
-        page.showPage()
+            ingredients_count += 1
+            if ingredients_count % max_ingredients_per_page == 0:
+                page.showPage()
+                page.setFont('Arial', size=16)
+
     page.save()
     pdf = buffer.getvalue()
     buffer.close()
