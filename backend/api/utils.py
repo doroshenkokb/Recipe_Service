@@ -26,7 +26,9 @@ def download_pdf(*ingredients_pages):
         for index, ingredient_data in enumerate(ingredients_cart, start=1):
             ing_name, unit, amount = ingredient_data
             ingredient_string = f'{index}. {ing_name} - {amount} {unit}'
-            height = initial_height - (ingredients_count % max_ingredients_per_page) * 20
+            height = initial_height - (
+                ingredients_count % max_ingredients_per_page
+            ) * 20
             page.drawString(50, height, ingredient_string)
             ingredients_count += 1
             if ingredients_count % max_ingredients_per_page == 0:
