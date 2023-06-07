@@ -1,11 +1,4 @@
 # Foodgram
- http://158.160.17.206/recipes 
-
-# Redoc будь он проклят)
-http://158.160.17.206/api/docs/
-
-урлы перенес, загрузку ингредиентов сделал на много страниц, редок работает
-
 
 ![ci/cd_foodgram workflow](https://github.com/doroshenkokb/foodgram-project-react/actions/workflows/my_project_workflows.yml/badge.svg)
 
