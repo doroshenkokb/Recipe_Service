@@ -1,6 +1,6 @@
 # Recipe_Service
 
-![ci/cd_foodgram workflow](https://github.com/doroshenkokb/foodgram-project-react/actions/workflows/my_project_workflows.yml/badge.svg)
+![ci/cd_foodgram workflow](https://github.com/doroshenkokb/Recipe_Service/actions/workflows/my_project_workflows.yml/badge.svg)
 
 ## Описание
 
@@ -185,23 +185,6 @@ TELEGRAM_TOKEN=<токен вашего бота>
 ```bash
    sudo docker-compose exec backend python manage.py createsuperuser
 ```
-
-Проект доступен по адресу: <http://158.160.17.206/recipes>
-
-Доступ в админку:
-
-```bash
-   email - admin@mail.ru
-   пароль - 12345
-```
-
-Пользователь:
-
-```bash
-   email - user1@mail.ru
-   пароль - P@ssword12345
-```
-
 
 #### Автор
 
