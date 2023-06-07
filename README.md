@@ -1,6 +1,6 @@
 # Recipe_Service
 
-![ci/cd_foodgram workflow](https://github.com/doroshenkokb/Recipe_Service/actions/workflows/my_project_workflows.yml/badge.svg)
+![ci/cd_Recipe_Service workflow](https://github.com/doroshenkokb/Recipe_Service/actions/workflows/my_project_workflows.yml/badge.svg)
 
 ## Описание
 
